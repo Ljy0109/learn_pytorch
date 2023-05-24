@@ -1,5 +1,28 @@
+"""
+实现根据IoU交并比，将锚框分配到真实框的功能。并得到真实的标签和偏移量
+from anchor_get_target import multibox_target  # 输入需要有batch_size维度
+"""
+
 import torch
-from anchor_IoU import box_iou
+
+
+def box_iou(boxes1, boxes2):
+    """计算两个锚框或边界框列表中成对的交并比"""
+    # 详细注释见anchor_IoU
+    box_area = lambda boxes: ((boxes[:, 2] - boxes[:, 0]) *
+                              (boxes[:, 3] - boxes[:, 1]))
+
+    areas1 = box_area(boxes1)
+    areas2 = box_area(boxes2)
+
+    inter_upperlefts = torch.max(boxes1[:, None, :2], boxes2[:, :2])
+    inter_lowerrights = torch.min(boxes1[:, None, 2:], boxes2[:, 2:])
+    inters = (inter_lowerrights - inter_upperlefts).clamp(min=0)
+
+    inter_areas = inters[:, :, 0] * inters[:, :, 1]
+    union_areas = areas1[:, None] + areas2 - inter_areas
+    return inter_areas / union_areas
+
 
 def assign_anchor_to_bbox(ground_truth, anchors, device, iou_threshold=0.5):
     """将最接近的真实边界框分配给锚框"""

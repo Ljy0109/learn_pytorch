@@ -1,5 +1,6 @@
 """
 一个用于加载香蕉检测数据集的自定义数据集
+https://blog.csdn.net/python_innocent/article/details/129753389
 """
 import torch
 from torch.utils.data import Dataset  # Dataset是抽象类，需要重定义

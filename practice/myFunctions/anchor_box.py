@@ -1,5 +1,7 @@
 """"
 编写锚框的生成程序
+该函数根据输入的特征图，指定的缩放比sizes，长宽比ratios生产锚框
+from anchor_box import multibox_prior
 """
 import torch
 import torchvision
@@ -8,7 +10,7 @@ import cv2
 def multibox_prior(data, sizes, ratios):
     """
     生成以每个像素为中心具有不同形状的锚框
-    尺寸均归一化到[0,1]
+    尺寸均归一化到[0,1],因为经过降采样之后尺寸会改变，归一化后就不用关注锚框坐标是否会随着尺寸变化了
     """
     # [-2:]从倒数第二个开始往后数,[:2]是数到第二个
     in_height, in_width = data.shape[-2:]
